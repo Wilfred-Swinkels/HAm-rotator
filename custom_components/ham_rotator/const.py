@@ -83,4 +83,4 @@ CARD_URL_BASE = "/ham_rotator_files"
 CARD_FILENAME = "ham-rotator-card.js"
 LAND_DATA_FILENAME = "land-110m.json"
 
-INTEGRATION_VERSION = "2.4.5"
+INTEGRATION_VERSION = "2.5.1"

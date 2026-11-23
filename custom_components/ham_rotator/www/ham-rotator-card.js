@@ -124,7 +124,22 @@
   }
 
   class HamRotatorCard extends HTMLElement {
-    static getStubConfig() {
+    static getStubConfig(hass) {
+      // Auto-pick the first HAm-rotator azimuth entity found, so adding
+      // the card from the picker shows the map immediately instead of an
+      // empty "missing entity" error -- regardless of what the entity_id
+      // happens to be named (it's derived from whatever title was typed
+      // during setup, e.g. "shack_..."). Identified by attributes this
+      // integration always sets together, since there's no dedicated
+      // device_class for "rotator azimuth".
+      if (hass && hass.states) {
+        const match = Object.keys(hass.states).find((id) => {
+          if (!id.startsWith("number.")) return false;
+          const attrs = hass.states[id].attributes || {};
+          return "home_latitude" in attrs && "tracking" in attrs;
+        });
+        if (match) return { entity: match, step: 5 };
+      }
       return { entity: "", step: 5 };
     }
 
@@ -1008,5 +1023,6 @@
     name: "HAm-rotator Card",
     description:
       "Azimuthal world map to control a ham radio antenna rotator.",
+    preview: true,
   });
 })();
