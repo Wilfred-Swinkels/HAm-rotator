@@ -207,7 +207,13 @@ wordt.
 ## De kaart toevoegen aan je dashboard
 
 Na installatie wordt de kaart automatisch als Lovelace-resource geregistreerd.
-Voeg daarna een kaart toe met:
+Makkelijkste manier om 'm toe te voegen: bewerk je dashboard, **+ Kaart
+toevoegen**, zoek op **"HAm-rotator"** (of "rotator") onder **By card** —
+je krijgt een live preview te zien, en als je maar één rotor hebt
+ingesteld wordt de juiste entity automatisch ingevuld.
+
+Liever YAML? Schakel de kaart-editor over naar "Edit in YAML", of voeg
+rechtstreeks een kaart toe:
 
 ```yaml
 type: custom:ham-rotator-card

@@ -202,7 +202,13 @@ idle and back in once tracking resumes.
 ## Adding the card to your dashboard
 
 After installation the card is automatically registered as a Lovelace
-resource. Then add a card with:
+resource. Easiest way to add it: edit your dashboard, **+ Add card**,
+search for **"HAm-rotator"** (or "rotator") under **By card** — it shows
+a live preview and, if you only have one rotor set up, auto-fills the
+right entity for you.
+
+Prefer YAML? Switch the card editor to "Edit in YAML", or add a card
+directly:
 
 ```yaml
 type: custom:ham-rotator-card
