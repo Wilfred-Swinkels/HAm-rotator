@@ -73,12 +73,28 @@ verouderd)? Voeg 'm dan handmatig toe als custom repository:
 2. Voeg deze repository-URL toe, categorie **Integration**.
 3. Ga verder bij stap 1 hierboven.
 
-## Je rotorcontroller configureren
+## Meerdere rotors (remote stations)
 
-Meerdere rotors tegelijk? Stel **Antennenaam** in (bovenaan de
-Connection-opties) om ze uit elkaar te houden — die naam staat op elke
-kaart naast de azimuth-uitlezing, en is standaard "Antenne 1" als je 'm
-leeg laat.
+Elke integratie-instantie bestuurt één rotor en heeft z'n eigen
+entiteiten, windsensoren en stormstand-instellingen — volledig los van
+de andere. Voeg de integratie gewoon nog een keer toe (Instellingen →
+Apparaten & diensten → Integratie toevoegen → HAm-rotator) per rotor,
+elk met een eigen host/poort en **Antennenaam** (bovenaan de
+Connection-opties, standaard "Antenne 1" als je 'm leeg laat), en je
+krijgt per antenne een eigen kaart en windrichting-pijl. Handig als je
+meerdere masten hebt, of remote stations die elk hun eigen weerstation
+hebben.
+
+<p align="center"><img src="assets/multi-rotor-setup.png" width="700" alt="Vier HAm-rotator-kaarten naast elkaar, elk met een eigen antennenaam, plus een Shack remote-paneel"></p>
+
+Ik heb dit zelf niet kunnen testen met echte multi-rotor-hardware (ik
+heb hier maar één rotor) — de screenshot hierboven gebruikt vier kaarten
+die naar dezelfde test-entiteit wijzen, puur om de layout en de
+**Antennenaam**-labels te checken. Heb je echt meerdere rotors of
+windsensoren draaien, dan hoor ik graag hoe het bevalt — [open een issue](https://github.com/Wilfred-Swinkels/HAm-rotator/issues)
+met je ervaringen.
+
+## Je rotorcontroller configureren
 
 Vier protocollen zijn beschikbaar bij **Protocol** tijdens het instellen
 van de integratie (en later via de opties):

@@ -235,6 +235,7 @@
           ha-card {
             overflow: hidden;
             padding: 0;
+            container-type: inline-size;
           }
           .header {
             padding: 12px 16px 0 16px;
@@ -292,7 +293,7 @@
           .antenna-name {
             display: block;
             text-align: center;
-            font-size: 1.3rem;
+            font-size: clamp(0.85rem, 4.3cqw, 1.6rem);
             font-weight: 600;
             color: var(--primary-text-color);
             overflow: hidden;
@@ -313,7 +314,7 @@
             left: calc(10px + 0.875 * (100% - 20px));
             top: 10.5%;
             transform: translate(-50%, -100%);
-            font-size: 1.3rem;
+            font-size: clamp(0.85rem, 4.3cqw, 1.6rem);
             font-weight: 600;
             color: var(--primary-text-color);
             font-variant-numeric: tabular-nums;

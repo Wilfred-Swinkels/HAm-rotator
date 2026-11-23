@@ -72,11 +72,27 @@ Add it manually as a custom repository instead:
 2. Add this repository URL, category **Integration**.
 3. Continue from step 1 above.
 
-## Configuring your rotor controller
+## Multiple rotors (remote stations)
 
-Running more than one rotor? Set **Antenna name** (top of the Connection
-options) to tell them apart — it's shown on each card next to the
-azimuth readout, and defaults to "Antenna 1" if left blank.
+Each integration entry controls one rotor and comes with its own
+entities, wind sensors, and storm settings — fully independent of any
+others. Add the integration again (Settings → Devices & services → Add
+integration → HAm-rotator) once per rotor, each with its own host/port
+and **Antenna name** (top of the Connection options, defaults to
+"Antenna 1" if left blank), and you get a separate card and wind-direction
+arrow per antenna. Handy if you run several masts, or remote stations
+that each have their own weather station.
+
+<p align="center"><img src="assets/multi-rotor-setup.png" width="700" alt="Four HAm-rotator cards side by side, each with its own antenna name, plus a Shack remote panel"></p>
+
+I haven't been able to test this with real multi-rotor hardware myself
+(I only have the one rotor here) — the screenshot above uses four cards
+pointed at the same test entity, just to check the layout and the
+**Antenna name** labels. If you actually run more than one rotor or wind
+sensor, I'd genuinely like to hear how it goes — [open an issue](https://github.com/Wilfred-Swinkels/HAm-rotator/issues)
+with your feedback.
+
+## Configuring your rotor controller
 
 Four protocols are available under **Protocol** when setting up the
 integration (and later in its options):
