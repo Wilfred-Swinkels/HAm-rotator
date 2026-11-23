@@ -314,6 +314,7 @@
             left: calc(10px + 0.875 * (100% - 20px));
             top: 10.5%;
             transform: translate(-50%, -100%);
+            white-space: nowrap;
             font-size: clamp(0.85rem, 4.3cqw, 1.6rem);
             font-weight: 600;
             color: var(--primary-text-color);
