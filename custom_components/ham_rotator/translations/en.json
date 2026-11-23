@@ -34,6 +34,7 @@
       "connection": {
         "title": "Connection",
         "data": {
+          "antenna_name": "Antenna name (shown on the card, next to the azimuth readout) — useful when controlling more than one rotor",
           "host": "Host or IP address",
           "port": "Port",
           "protocol": "Protocol",
@@ -53,7 +54,8 @@
           "wind_speed_entity": "Wind speed sensor",
           "wind_speed_threshold": "Wind threshold (same unit as the sensor)",
           "wind_direction_entity": "Wind direction sensor (realtime, shown as an arrow on the card)",
-          "wind_direction_avg_entity": "Wind direction sensor (10-minute average, used for storm turns)",
+          "wind_direction_avg_entity": "Wind direction sensor (averaged, used for storm turns) — e.g. your weather station's own 10-minute average, or the sensor created below",
+          "wind_avg_minutes": "Also create an averaged wind direction sensor over this many minutes (blank to skip)",
           "storm_turn_mode": "Storm turn direction"
         }
       },

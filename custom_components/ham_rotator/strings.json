@@ -34,6 +34,7 @@
       "connection": {
         "title": "Verbinding",
         "data": {
+          "antenna_name": "Antennenaam (getoond op de kaart, naast de azimuth-uitlezing) — handig als je meer dan één rotor bestuurt",
           "host": "Hostnaam of IP-adres",
           "port": "Poort",
           "protocol": "Protocol",
@@ -53,7 +54,8 @@
           "wind_speed_entity": "Windsnelheid-sensor",
           "wind_speed_threshold": "Winddrempel (zelfde eenheid als de sensor)",
           "wind_direction_entity": "Windrichting-sensor (realtime, getoond als pijl op de kaart)",
-          "wind_direction_avg_entity": "Windrichting-sensor (10-minuten-gemiddelde, gebruikt om naar te draaien)",
+          "wind_direction_avg_entity": "Windrichting-sensor (gemiddeld, gebruikt om naar te draaien) — bv. de 10-minuten-gemiddelde van je weerstation, of de hieronder aan te maken sensor",
+          "wind_avg_minutes": "Ook een gemiddelde-windrichting-sensor aanmaken over dit aantal minuten (leeg = niet aanmaken)",
           "storm_turn_mode": "Draairichting bij storm"
         }
       },

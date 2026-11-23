@@ -75,6 +75,11 @@ verouderd)? Voeg 'm dan handmatig toe als custom repository:
 
 ## Je rotorcontroller configureren
 
+Meerdere rotors tegelijk? Stel **Antennenaam** in (bovenaan de
+Connection-opties) om ze uit elkaar te houden — die naam staat op elke
+kaart naast de azimuth-uitlezing, en is standaard "Antenne 1" als je 'm
+leeg laat.
+
 Vier protocollen zijn beschikbaar bij **Protocol** tijdens het instellen
 van de integratie (en later via de opties):
 
@@ -132,12 +137,22 @@ HAm-rotator → ⋮ → Opties**) en kies **Storm** uit het menu:
   de kaart een pijl op de kompasroos met de actuele windrichting (half op
   de buitenring, half erbuiten, naar binnen wijzend), die rood kleurt
   zodra de winddrempel hierboven overschreden wordt.
-- **Windrichting-sensor (10-minuten-gemiddelde)** — optioneel; indien
-  ingesteld krijgt deze voorrang op de vaste stormstand zodra de
-  winddrempel overschreden wordt: de antenne volgt dan de wind in plaats
-  van een vaste waarde. Een 10-minuten-gemiddelde sensor is hier
-  aanbevolen boven de realtime-sensor, zodat een enkele windvlaag de
-  antenne niet achterna laat draaien.
+- **Windrichting-sensor (gemiddeld)** — optioneel; indien ingesteld krijgt
+  deze voorrang op de vaste stormstand zodra de winddrempel overschreden
+  wordt: de antenne volgt dan de wind in plaats van een vaste waarde. Een
+  gemiddelde sensor is hier aanbevolen boven de realtime-sensor, zodat een
+  enkele windvlaag de antenne niet achterna laat draaien — wijs dit naar
+  de eigen 10-minuten-gemiddelde van je weerstation als die bestaat, of
+  naar de hieronder aan te maken sensor.
+- **Ook een gemiddelde-windrichting-sensor aanmaken over N minuten** —
+  optioneel; vul elke gewenste periode in minuten in, en de integratie
+  berekent 'm zelf uit de realtime windrichting-sensor hierboven (een
+  correct circulair/vector-gemiddelde, gewogen met de windsnelheid als
+  die sensor is ingesteld, geen naïef gemiddelde dat stukloopt op de
+  0°/360°-grens). Wordt een gewone sensor-entiteit die je bij de optie
+  hierboven kunt kiezen, kunt grafieken, of elders kunt gebruiken. Wordt
+  ook getoond op de kaart als tweede pijl (groen, rood bij alarm) naast
+  de realtime pijl.
 - **Draairichting bij storm** — bij het volgen van de wind: ofwel recht de
   wind in, ofwel haaks erop (van de twee haakse opties wordt steeds
   degene met de minste rotatie vanaf de huidige stand gekozen).
@@ -193,6 +208,7 @@ Optionele configuratie-opties:
 |---|---|---|
 | `entity` | **(verplicht)** De `number`-entiteit van de integratie | — |
 | `title` | Titel boven de kaart | *(geen)* |
+| `antenna_name` | Label links van de azimuth-uitlezing -- override voor alleen deze kaart; normaal stel je dit één keer in bij de Connection-opties van de integratie (zie hieronder), dan geldt het overal | *(uit de integratie, of "Antenne 1")* |
 | `step` | Stapgrootte van de +/− knoppen | `5` |
 | `home_latitude` / `home_longitude` | Overschrijf de locatie uit de integratie/HA | zie "Thuislocatie" hierboven |
 | `land_color` | Forceer één vaste kleur voor alle landen i.p.v. het per-land-palet | *(per-land palet)* |

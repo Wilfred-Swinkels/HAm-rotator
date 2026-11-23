@@ -74,6 +74,10 @@ Add it manually as a custom repository instead:
 
 ## Configuring your rotor controller
 
+Running more than one rotor? Set **Antenna name** (top of the Connection
+options) to tell them apart — it's shown on each card next to the
+azimuth readout, and defaults to "Antenna 1" if left blank.
+
 Four protocols are available under **Protocol** when setting up the
 integration (and later in its options):
 
@@ -131,11 +135,21 @@ HAm-rotator → ⋮ → Options**) and pick **Storm** from the menu:
   an arrow on the compass rose showing live wind direction (straddling the
   outer ring, pointing inward), turning red once the wind threshold above
   is crossed.
-- **Wind direction sensor (10-minute average)** — optional; if set, this
-  takes priority over the fixed storm azimuth once the wind threshold is
+- **Wind direction sensor (averaged)** — optional; if set, this takes
+  priority over the fixed storm azimuth once the wind threshold is
   crossed: the antenna turns to track the wind instead of a static value.
-  A 10-minute-average sensor is recommended here (rather than the realtime
-  one) so a single gust doesn't send the antenna chasing it.
+  An averaged sensor is recommended here (rather than the realtime one)
+  so a single gust doesn't send the antenna chasing it — point this at
+  your weather station's own 10-minute average if it has one, or at the
+  sensor created below.
+- **Also create an averaged wind direction sensor over N minutes** —
+  optional; enter any window in minutes and the integration computes it
+  itself from the realtime wind direction sensor above (a proper
+  circular/vector average, weighted by wind speed if that sensor is set,
+  not a naive mean that breaks across the 0°/360° boundary). Becomes a
+  regular sensor entity you can point the option above at, graph, or use
+  elsewhere. Also shown on the card as a second (green, red once alerted)
+  arrow next to the realtime one.
 - **Storm turn direction** — when turning to track the wind, either turn
   straight into the wind, or perpendicular to it (whichever of the two
   perpendicular options needs the least rotation from the current
@@ -189,6 +203,7 @@ Optional configuration options:
 |---|---|---|
 | `entity` | **(required)** The integration's `number` entity | — |
 | `title` | Title shown above the card | *(none)* |
+| `antenna_name` | Label shown to the left of the azimuth readout -- override for just this card; normally set once in the integration's Connection options (see below) so it applies everywhere | *(from the integration, or "Antenna 1")* |
 | `step` | Step size of the +/− buttons | `5` |
 | `home_latitude` / `home_longitude` | Override the location from the integration/HA | see "Home location" above |
 | `land_color` | Force every country to this one flat color instead of the per-country palette | *(per-country palette)* |

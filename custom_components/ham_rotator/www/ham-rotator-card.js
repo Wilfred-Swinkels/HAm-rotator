@@ -20,6 +20,7 @@
       park: "Park",
       zoomIn: "Zoom in",
       zoomOut: "Zoom out",
+      antennaName: "Antenna 1",
     },
     nl: {
       missingEntity:
@@ -28,6 +29,7 @@
       park: "Park",
       zoomIn: "Inzoomen",
       zoomOut: "Uitzoomen",
+      antennaName: "Antenne 1",
     },
   };
 
@@ -133,6 +135,7 @@
       this._config = {
         step: 5,
         title: "",
+        antenna_name: null,
         land_color: null,
         land_stroke: null,
         ocean_from: "#2f7fb8",
@@ -283,17 +286,37 @@
           .preset-btn.dir {
             background: var(--ham-rotator-accent, #2f7fb8);
           }
-          .az-readout {
-            text-align: center;
+          .az-row {
             padding: 0 16px 10px 16px;
+          }
+          .antenna-name {
+            display: block;
+            text-align: center;
             font-size: 1.3rem;
             font-weight: 600;
             color: var(--primary-text-color);
-            font-variant-numeric: tabular-nums;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
           }
           .map-wrap {
             position: relative;
             padding: 4px 10px 10px 10px;
+          }
+          .az-readout {
+            position: absolute;
+            /* Horizontally centered under the 4th (rightmost) preset
+               button column -- mirrors preset-row's own 16px padding and
+               4-column grid math. Vertically, the transform's -100% puts
+               the *bottom* of this text at the circle's rim (top edge),
+               rather than the text's top. */
+            left: calc(10px + 0.875 * (100% - 20px));
+            top: 10.5%;
+            transform: translate(-50%, -100%);
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary-text-color);
+            font-variant-numeric: tabular-nums;
           }
           svg {
             display: block;
@@ -381,12 +404,15 @@
           </div>
           <div class="map-wrap">
             <svg id="svg" viewBox="0 0 380 380"></svg>
+            <div class="az-readout" id="az-readout">Az: --&deg;</div>
             <button class="zoom zoom-out" id="zoom-out">&minus;</button>
             <button class="zoom zoom-in" id="zoom-in">+</button>
             <button class="nudge minus" id="minus"></button>
             <button class="nudge plus" id="plus"></button>
           </div>
-          <div class="az-readout" id="az-readout">Az: --&deg;</div>
+          <div class="az-row">
+            <span class="antenna-name" id="antenna-name"></span>
+          </div>
         </ha-card>
       `;
 
@@ -433,6 +459,12 @@
       const zoomOut = this.shadowRoot.getElementById("zoom-out");
       if (zoomIn) zoomIn.title = t.zoomIn;
       if (zoomOut) zoomOut.title = t.zoomOut;
+      const antennaName = this.shadowRoot.getElementById("antenna-name");
+      if (antennaName) {
+        const attrs = this._hass?.states?.[this._config.entity]?.attributes || {};
+        antennaName.textContent =
+          this._config.antenna_name || attrs.antenna_name || t.antennaName;
+      }
     }
 
     async _setZoom(zoom) {
@@ -492,6 +524,11 @@
         { id: "windDarkGrad", from: "#ffe9a8", to: "var(--ham-rotator-wind-dark, #f9a825)" },
         { id: "windAlertLightGrad", from: "#ffffff", to: "var(--ham-rotator-wind-alert-light, #ff8a65)" },
         { id: "windAlertDarkGrad", from: "#ff9e8a", to: "var(--ham-rotator-wind-alert-dark, #b71c1c)" },
+        // Second arrow: the chosen averaged wind direction. Green instead
+        // of yellow when calm, but the same red once the storm threshold
+        // is crossed (reuses the alert gradients above).
+        { id: "windAvgLightGrad", from: "#ffffff", to: "var(--ham-rotator-wind-avg-light, #c5e1a5)" },
+        { id: "windAvgDarkGrad", from: "#d4f0a0", to: "var(--ham-rotator-wind-avg-dark, #558b2f)" },
       ];
       for (const spec of windGradSpecs) {
         const g = svgEl("radialGradient", { id: spec.id, cx: "35%", cy: "28%", r: "85%" });
@@ -684,99 +721,109 @@
       });
       svg.appendChild(this._needleDot);
 
-      // Wind direction arrow: a compact dart (width == height) that
-      // straddles the circle's edge (half inside the ocean fill, half
-      // outside) and points inward. Two-tone (split down the middle) for a
+      // Wind direction arrows: compact darts (width == height) that
+      // straddle the circle's edge (half inside the ocean fill, half
+      // outside) and point inward. Two-tone (split down the middle) for a
       // faceted look, like a weather-vane. Drawn once pointing north
       // (straight up); direction is then applied purely via a CSS
       // `transform: rotate` on the wrapping group around the compass
       // center, so changes animate smoothly instead of the shape being
-      // rebuilt (and snapping) on every update. Hidden until a wind
-      // direction reading is available; turns red (still two-tone) once
-      // wind speed crosses the configured storm threshold.
-      {
-        const cx = this._cx;
-        const cy = this._cy;
-        const R = this._R;
-        const size = 22;
-        const half = size / 2;
-        const wingSpread = half;
-        const tailPullIn = size * 0.3;
-        // Pointing north: tip closer to center (smaller radius), tail
-        // further out, wings spread left/right.
-        const tip = { x: cx, y: cy - R + half };
-        const tailY = cy - R - half;
-        const tailNotch = { x: cx, y: tailY + tailPullIn };
-        const rightWing = { x: cx + wingSpread, y: tailY };
-        const leftWing = { x: cx - wingSpread, y: tailY };
-        const f1 = (n) => n.toFixed(1);
-        const outlineD =
-          `M${f1(tip.x)},${f1(tip.y)} L${f1(rightWing.x)},${f1(rightWing.y)} ` +
-          `L${f1(tailNotch.x)},${f1(tailNotch.y)} L${f1(leftWing.x)},${f1(leftWing.y)} Z`;
-        const leftHalfD =
-          `M${f1(tip.x)},${f1(tip.y)} L${f1(tailNotch.x)},${f1(tailNotch.y)} ` +
-          `L${f1(leftWing.x)},${f1(leftWing.y)} Z`;
-        const rightHalfD =
-          `M${f1(tip.x)},${f1(tip.y)} L${f1(rightWing.x)},${f1(rightWing.y)} ` +
-          `L${f1(tailNotch.x)},${f1(tailNotch.y)} Z`;
-
-        this._windArrowGroup = svgEl("g", {
-          style:
-            `display: none; transform-origin: ${cx}px ${cy}px; ` +
-            "transition: transform 2.5s ease;",
-        });
-        // A separate outline tracing only the outer silhouette (never the
-        // shared seam between the two halves) -- drawn first so the two
-        // fills layer on top and cover its inner half, leaving just a
-        // subtle outer border with no stroke down the middle.
-        const windArrowOutline = svgEl("path", {
-          d: outlineD,
-          fill: "none",
-          stroke: "rgba(0, 0, 0, 0.35)",
-          "stroke-width": 1,
-          "stroke-linejoin": "round",
-        });
-        this._windArrowLeft = svgEl("path", {
-          d: leftHalfD,
-          style: "transition: fill 0.3s ease;",
-        });
-        this._windArrowRight = svgEl("path", {
-          d: rightHalfD,
-          style: "transition: fill 0.3s ease;",
-        });
-        this._windArrowGroup.appendChild(windArrowOutline);
-        this._windArrowGroup.appendChild(this._windArrowLeft);
-        this._windArrowGroup.appendChild(this._windArrowRight);
-      }
-      svg.appendChild(this._windArrowGroup);
+      // rebuilt (and snapping) on every update. Hidden until a reading is
+      // available; turns red (still two-tone) once wind speed crosses the
+      // configured storm threshold.
+      //
+      // Two of these, both straddling the same boundary: the realtime wind
+      // direction (yellow/red), and the chosen averaged direction
+      // (green/red) -- they overlap when the two roughly agree, which is
+      // itself informative.
+      this._windArrowRealtime = this._createWindArrow(svg, 0);
+      this._windArrowAvg = this._createWindArrow(svg, 0);
       this._windArrowAngle = null;
+      this._windArrowAvgAngle = null;
     }
 
-    _renderWindArrow(direction, alert) {
-      if (!this._windArrowGroup) return;
+    _createWindArrow(svg, radiusOffset) {
+      const cx = this._cx;
+      const cy = this._cy;
+      const R = this._R + radiusOffset;
+      const size = 22;
+      const half = size / 2;
+      const wingSpread = half;
+      const tailPullIn = size * 0.3;
+      // Pointing north: tip closer to center (smaller radius), tail
+      // further out, wings spread left/right.
+      const tip = { x: cx, y: cy - R + half };
+      const tailY = cy - R - half;
+      const tailNotch = { x: cx, y: tailY + tailPullIn };
+      const rightWing = { x: cx + wingSpread, y: tailY };
+      const leftWing = { x: cx - wingSpread, y: tailY };
+      const f1 = (n) => n.toFixed(1);
+      const outlineD =
+        `M${f1(tip.x)},${f1(tip.y)} L${f1(rightWing.x)},${f1(rightWing.y)} ` +
+        `L${f1(tailNotch.x)},${f1(tailNotch.y)} L${f1(leftWing.x)},${f1(leftWing.y)} Z`;
+      const leftHalfD =
+        `M${f1(tip.x)},${f1(tip.y)} L${f1(tailNotch.x)},${f1(tailNotch.y)} ` +
+        `L${f1(leftWing.x)},${f1(leftWing.y)} Z`;
+      const rightHalfD =
+        `M${f1(tip.x)},${f1(tip.y)} L${f1(rightWing.x)},${f1(rightWing.y)} ` +
+        `L${f1(tailNotch.x)},${f1(tailNotch.y)} Z`;
+
+      const group = svgEl("g", {
+        style:
+          `display: none; transform-origin: ${cx}px ${cy}px; ` +
+          "transition: transform 2.5s ease;",
+      });
+      // A separate outline tracing only the outer silhouette (never the
+      // shared seam between the two halves) -- drawn first so the two
+      // fills layer on top and cover its inner half, leaving just a
+      // subtle outer border with no stroke down the middle.
+      const outline = svgEl("path", {
+        d: outlineD,
+        fill: "none",
+        stroke: "rgba(0, 0, 0, 0.35)",
+        "stroke-width": 1,
+        "stroke-linejoin": "round",
+      });
+      const left = svgEl("path", {
+        d: leftHalfD,
+        style: "transition: fill 0.3s ease;",
+      });
+      const right = svgEl("path", {
+        d: rightHalfD,
+        style: "transition: fill 0.3s ease;",
+      });
+      group.appendChild(outline);
+      group.appendChild(left);
+      group.appendChild(right);
+      svg.appendChild(group);
+      return { group, left, right };
+    }
+
+    _renderWindArrow(arrow, angleKey, direction, lightGradId, darkGradId, alertLightGradId, alertDarkGradId, alert) {
+      if (!arrow) return;
       if (direction == null || !Number.isFinite(direction)) {
-        this._windArrowGroup.style.display = "none";
-        this._windArrowAngle = null;
+        arrow.group.style.display = "none";
+        this[angleKey] = null;
         return;
       }
-      const lightFill = alert ? "url(#windAlertLightGrad)" : "url(#windLightGrad)";
-      const darkFill = alert ? "url(#windAlertDarkGrad)" : "url(#windDarkGrad)";
+      const lightFill = alert ? `url(#${alertLightGradId})` : `url(#${lightGradId})`;
+      const darkFill = alert ? `url(#${alertDarkGradId})` : `url(#${darkGradId})`;
 
       // Accumulate rotation (rather than using `direction` directly) so a
       // wrap across 360/0 takes the short way instead of spinning back
       // around -- each step only ever moves by the shortest signed delta.
-      if (this._windArrowAngle == null) {
-        this._windArrowAngle = direction;
+      if (this[angleKey] == null) {
+        this[angleKey] = direction;
       } else {
-        const prev = this._windArrowAngle;
+        const prev = this[angleKey];
         const delta = (((direction - prev) % 360) + 540) % 360 - 180;
-        this._windArrowAngle = prev + delta;
+        this[angleKey] = prev + delta;
       }
 
-      this._windArrowGroup.style.transform = `rotate(${this._windArrowAngle}deg)`;
-      this._windArrowLeft.setAttribute("fill", lightFill);
-      this._windArrowRight.setAttribute("fill", darkFill);
-      this._windArrowGroup.style.display = "";
+      arrow.group.style.transform = `rotate(${this[angleKey]}deg)`;
+      arrow.left.setAttribute("fill", lightFill);
+      arrow.right.setAttribute("fill", darkFill);
+      arrow.group.style.display = "";
     }
 
     _azimuthFromEvent(ev) {
@@ -911,8 +958,29 @@
       if (readout) readout.textContent = `Az: ${Math.round(az)}°`;
       this._renderNeedle(az);
       this._renderBeamTriangle(realAz);
+      const windAlert = !!attrs.wind_alert;
       const windDirection = attrs.wind_direction != null ? Number(attrs.wind_direction) : null;
-      this._renderWindArrow(windDirection, !!attrs.wind_alert);
+      this._renderWindArrow(
+        this._windArrowRealtime,
+        "_windArrowAngle",
+        windDirection,
+        "windLightGrad",
+        "windDarkGrad",
+        "windAlertLightGrad",
+        "windAlertDarkGrad",
+        windAlert
+      );
+      const windDirectionAvg = attrs.wind_direction_avg != null ? Number(attrs.wind_direction_avg) : null;
+      this._renderWindArrow(
+        this._windArrowAvg,
+        "_windArrowAvgAngle",
+        windDirectionAvg,
+        "windAvgLightGrad",
+        "windAvgDarkGrad",
+        "windAlertLightGrad",
+        "windAlertDarkGrad",
+        windAlert
+      );
 
       for (const preset of PRESET_BUTTONS) {
         const btn = this.shadowRoot.getElementById(`preset-${preset.id}`);

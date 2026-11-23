@@ -11,6 +11,7 @@ from homeassistant.helpers import selector
 
 from .const import (
     CONF_ANTENNA_GAIN,
+    CONF_ANTENNA_NAME,
     CONF_BEAMWIDTH,
     CONF_CUSTOM_IS_UDP,
     CONF_CUSTOM_TEMPLATE,
@@ -36,6 +37,7 @@ from .const import (
     CONF_QTH_LOCATOR,
     CONF_STORM_AZIMUTH,
     CONF_STORM_TURN_MODE,
+    CONF_WIND_AVG_MINUTES,
     CONF_WIND_DIRECTION_AVG_ENTITY,
     CONF_WIND_DIRECTION_ENTITY,
     CONF_WIND_SPEED_ENTITY,
@@ -62,7 +64,7 @@ PROTOCOL_OPTIONS = {
 
 STORM_TURN_MODE_OPTIONS = {
     STORM_TURN_MODE_WITH_WIND: "Turn into the wind",
-    STORM_TURN_MODE_PERPENDICULAR: "Turn perpendicular to the wind (least rotation)",
+    STORM_TURN_MODE_PERPENDICULAR: "Turn perpendicular to the wind",
 }
 
 
@@ -154,6 +156,9 @@ class HamRotatorOptionsFlow(config_entries.OptionsFlow):
 
         schema = vol.Schema(
             {
+                vol.Optional(
+                    CONF_ANTENNA_NAME, default=current.get(CONF_ANTENNA_NAME, "")
+                ): str,
                 vol.Required(CONF_HOST, default=current.get(CONF_HOST, "")): str,
                 vol.Required(
                     CONF_PORT,
@@ -243,6 +248,10 @@ class HamRotatorOptionsFlow(config_entries.OptionsFlow):
                 ): selector.EntitySelector(
                     selector.EntitySelectorConfig(domain="sensor")
                 ),
+                vol.Optional(
+                    CONF_WIND_AVG_MINUTES,
+                    default=current.get(CONF_WIND_AVG_MINUTES, ""),
+                ): str,
                 vol.Optional(
                     CONF_STORM_TURN_MODE,
                     default=current.get(

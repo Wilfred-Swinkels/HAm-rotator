@@ -15,6 +15,7 @@ from homeassistant.helpers.restore_state import RestoreEntity
 
 from .antenna import resolve_beamwidth
 from .const import (
+    CONF_ANTENNA_NAME,
     CONF_STORM_TURN_MODE,
     CONF_WIND_DIRECTION_AVG_ENTITY,
     CONF_WIND_DIRECTION_ENTITY,
@@ -103,6 +104,9 @@ class HamRotatorAzimuthNumber(NumberEntity, RestoreEntity):
         attrs = {"home_latitude": lat, "home_longitude": lon}
         if locator:
             attrs["qth_locator"] = locator
+        antenna_name = self._client.get_option(CONF_ANTENNA_NAME)
+        if antenna_name:
+            attrs["antenna_name"] = antenna_name
         for preset in PRESET_BUTTONS:
             azimuth = self._preset_azimuth(preset)
             if azimuth is not None:
@@ -119,6 +123,8 @@ class HamRotatorAzimuthNumber(NumberEntity, RestoreEntity):
         attrs["tracking"] = self._tracking
         if self._wind_direction is not None:
             attrs["wind_direction"] = self._wind_direction
+        if self._wind_direction_avg is not None:
+            attrs["wind_direction_avg"] = self._wind_direction_avg
         threshold = self._client.get_option(CONF_WIND_SPEED_THRESHOLD)
         if self._wind_speed is not None and threshold not in (None, ""):
             try:
@@ -212,7 +218,7 @@ class HamRotatorAzimuthNumber(NumberEntity, RestoreEntity):
         self.async_write_ha_state()
 
     async def _async_wind_direction_avg_changed(self, event: Event) -> None:
-        """Track the 10-minute-average wind direction, used for storm turns."""
+        """Track the averaged wind direction, used for storm turns and the card's second arrow."""
         new_state = event.data.get("new_state")
         if new_state is None:
             return
@@ -220,6 +226,7 @@ class HamRotatorAzimuthNumber(NumberEntity, RestoreEntity):
             self._wind_direction_avg = float(new_state.state)
         except (TypeError, ValueError):
             return
+        self.async_write_ha_state()
 
     def _storm_target_azimuth(self) -> float | None:
         """Pick where to turn for storm protection.

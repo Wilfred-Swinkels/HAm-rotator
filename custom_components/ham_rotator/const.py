@@ -4,8 +4,9 @@ from __future__ import annotations
 DOMAIN = "ham_rotator"
 DEFAULT_NAME = "HAm-rotator"
 
-PLATFORMS = ["number"]
+PLATFORMS = ["number", "sensor"]
 
+CONF_ANTENNA_NAME = "antenna_name"
 CONF_HOST = "host"
 CONF_PORT = "port"
 CONF_PROTOCOL = "protocol"
@@ -21,9 +22,16 @@ CONF_WIND_SPEED_THRESHOLD = "wind_speed_threshold"
 CONF_WIND_DIRECTION_ENTITY = "wind_direction_entity"
 CONF_WIND_DIRECTION_AVG_ENTITY = "wind_direction_avg_entity"
 CONF_STORM_TURN_MODE = "storm_turn_mode"
+CONF_WIND_AVG_MINUTES = "wind_avg_minutes"
 
 STORM_TURN_MODE_WITH_WIND = "with_wind"
 STORM_TURN_MODE_PERPENDICULAR = "perpendicular"
+
+# unique_id suffix for the self-computed wind-direction-average sensor,
+# with a user-chosen averaging window in minutes. Most weather station
+# integrations already provide a 10-minute average, so this is for
+# whatever other window the user wants instead.
+WIND_AVG_SUFFIX = "wind_direction_avg"
 CONF_BEAMWIDTH = "beamwidth"
 CONF_ANTENNA_GAIN = "antenna_gain"
 CONF_PARK_AZIMUTH = "park_azimuth"
@@ -75,4 +83,4 @@ CARD_URL_BASE = "/ham_rotator_files"
 CARD_FILENAME = "ham-rotator-card.js"
 LAND_DATA_FILENAME = "land-110m.json"
 
-INTEGRATION_VERSION = "2.1.6"
+INTEGRATION_VERSION = "2.4.3"
