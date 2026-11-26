@@ -167,9 +167,7 @@ HAm-rotator → ⋮ → Options**) and pick **Storm** from the menu:
   elsewhere. Also shown on the card as a second (green, red once alerted)
   arrow next to the realtime one.
 - **Storm turn direction** — when turning to track the wind, either turn
-  straight into the wind, or perpendicular to it (whichever of the two
-  perpendicular options needs the least rotation from the current
-  position).
+  straight into the wind, or perpendicular to it.
 
 Leave the wind speed sensor empty to turn this off entirely. Either way,
 the **Storm** button on the card always lets you turn to the fixed storm

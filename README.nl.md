@@ -170,8 +170,7 @@ HAm-rotator → ⋮ → Opties**) en kies **Storm** uit het menu:
   ook getoond op de kaart als tweede pijl (groen, rood bij alarm) naast
   de realtime pijl.
 - **Draairichting bij storm** — bij het volgen van de wind: ofwel recht de
-  wind in, ofwel haaks erop (van de twee haakse opties wordt steeds
-  degene met de minste rotatie vanaf de huidige stand gekozen).
+  wind in, ofwel haaks erop.
 
 Laat het windsnelheid-sensor-veld leeg om dit helemaal uit te zetten. De
 **Storm**-knop op de kaart werkt sowieso altijd om handmatig naar de vaste
